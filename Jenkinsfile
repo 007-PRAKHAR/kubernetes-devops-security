@@ -17,7 +17,7 @@ pipeline {
               always{
                 junit 'target/surefire-reports/*.xml'
                 jacoco (
-                  execPartition: 'target/jacoco.exec'
+                  execPartition: '**/build/jacoco/*.exec'
                   )
               }
             }
