@@ -22,5 +22,14 @@ pipeline {
               }
             }
         }
+    stage('Docker build and push') {
+            steps {
+              docker.withRegistry(url="", credentialsId= "docker-hub"){
+                sh 'printenv'
+                sh 'docker build -t prakhar0012/numeric-app:""$GIT_COMMIT"" . '
+                sh 'docker push prakhar0012/numeric-app:""$GIT_COMMIT""'
+              }
+            }
+        }
     }
 }
