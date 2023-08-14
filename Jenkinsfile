@@ -1,9 +1,5 @@
 pipeline {
-  environment { 
-        registry = 'https://hub.docker.com/r/prakhar0012/numeric-app' 
-        registryCredential = 'docker-hub' 
-    }
-  
+
   agent any
 
   stages {
@@ -29,7 +25,7 @@ pipeline {
         }
     stage('Docker build and push') {
             steps {
-              docker.withRegistry(registry, registryCredential){
+              docker.withRegistry('https://hub.docker.com/r/prakhar0012/numeric-app', 'docker-hub'){
                 sh 'printenv'
                 sh 'docker build -t prakhar0012/numeric-app:""$GIT_COMMIT"" . '
                 sh 'docker push prakhar0012/numeric-app:""$GIT_COMMIT""'
