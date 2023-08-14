@@ -1,6 +1,6 @@
 pipeline {
 
-  enviornment{
+  environment{
     DOCKER_CRED = credentials('docker-hub')
   } 
   
