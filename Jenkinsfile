@@ -27,21 +27,21 @@ pipeline {
               }
             }
         }
-    stage('Docker build') {
+    stage('Docker build and push') {
             steps {
                 sh 'docker build -t prakhar0012/numeric-app:$BUILD_NUMBER . '
+                sh 'echo $DOCKER_CRED_PSW | docker login -u $DOCKER_CRED_USR --password-stdin'
+                sh 'docker push prakhar0012/numeric-app:$BUILD_NUMBER'
+      }
+    }
+    stage('kubernetes deployment'){
+            steps {
+              withKubeConfig([credentialsId: 'kubeconfig']) {
+                sh "sed -i 's#replace#prakhar0012/numeric-app:$BUILD_NUMBER#g' k8s_deployment_service.yaml"
+                sh "kubectl apply -f k8s_deployment_service.yaml"
               }
             }
-    stage ('Login to docker'){
-      steps{
-        sh 'echo $DOCKER_CRED_PSW | docker login -u $DOCKER_CRED_USR --password-stdin'
-      }
-    }
-    stage ('Push Docker image'){
-      steps{
-        sh 'docker push prakhar0012/numeric-app:$BUILD_NUMBER'
-      }
-    }
+          }
         }
 post {
   always {
