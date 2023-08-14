@@ -1,5 +1,9 @@
 pipeline {
 
+  enviornment{
+    DOCKER_CRED = credentials('docker-hub')
+  } 
+  
   agent any
 
   stages {
@@ -23,14 +27,26 @@ pipeline {
               }
             }
         }
-    stage('Docker build and push') {
+    stage('Docker build') {
             steps {
-              docker.withRegistry('https://hub.docker.com/r/prakhar0012/numeric-app', 'docker-hub'){
-                sh 'printenv'
-                sh 'docker build -t prakhar0012/numeric-app:""$GIT_COMMIT"" . '
-                sh 'docker push prakhar0012/numeric-app:""$GIT_COMMIT""'
+                sh 'docker build -t prakhar0012/numeric-app:$BUILD_NUMBER . '
               }
             }
+    stage ('Login to docker'){
+      steps{
+        sh 'echo $DOCKER_CRED | docker login -u $DOCKER_CRED --password-stdin'
+      }
+    }
+    stage ('Push Docker image'){
+      steps{
+        sh 'docker pull prakhar0012/numeric-app:$BUILD_NUMBER'
+      }
+    }
         }
     }
+post {
+  always {
+    sh 'docker logout'
+  }
+}
 }
