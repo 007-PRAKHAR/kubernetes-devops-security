@@ -39,7 +39,7 @@ pipeline {
     }
     stage ('Push Docker image'){
       steps{
-        sh 'docker pull prakhar0012/numeric-app:$BUILD_NUMBER'
+        sh 'docker push prakhar0012/numeric-app:$BUILD_NUMBER'
       }
     }
         }
