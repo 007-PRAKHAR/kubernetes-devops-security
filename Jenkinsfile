@@ -27,6 +27,16 @@ pipeline {
               }
             }
         }
+    stage ('Mutation Test - PIT'){
+		steps{
+			sh "mvn org.pitest:pitest-maven:mutationCoverage"
+		}
+		post{
+		  always{
+			pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+		  }
+		}
+	}
     stage('Docker build and push') {
             steps {
                 sh 'docker build -t prakhar0012/numeric-app:$BUILD_NUMBER . '
