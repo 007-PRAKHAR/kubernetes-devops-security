@@ -43,6 +43,16 @@ pipeline {
                 }
             }
         }
+    stage ('Vulnerability Scan - Docker') {
+	    steps {
+		    sh "mvn dependency-check:check"
+	    }
+	    post {
+		    always {
+			    dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+		    }
+	    } 
+    }
     stage('Docker build and push') {
             steps {
                 sh 'docker build -t prakhar0012/numeric-app:$BUILD_NUMBER . '
