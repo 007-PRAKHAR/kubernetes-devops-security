@@ -70,6 +70,11 @@ pipeline {
                 sh 'docker push prakhar0012/numeric-app:$BUILD_NUMBER'
       }
     }
+    stage ('Vulnerability Scan - k8s') {
+	    steps {
+		    sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-k8s-security.rego k8s_deployment_service.yaml'
+	    }
+    }
     stage('kubernetes deployment'){
             steps {
               withKubeConfig([credentialsId: 'kubeconfig']) {
