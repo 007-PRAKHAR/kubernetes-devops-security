@@ -79,6 +79,7 @@ pipeline {
 		           "Kubesec Scan": {
 		             sh "bash kubesec-scan.sh"
            		   }
+		   )
 	    }
     }
     stage('kubernetes deployment'){
