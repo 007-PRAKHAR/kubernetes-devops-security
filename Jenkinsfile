@@ -62,7 +62,7 @@ pipeline {
     }
     stage('Docker build and push') {
             steps {
-                sh 'docker build -t prakhar0012/numeric-app:$BUILD_NUMBER . '
+                sh 'sudo docker build -t prakhar0012/numeric-app:$BUILD_NUMBER . '
                 sh 'echo $DOCKER_CRED_PSW | docker login -u $DOCKER_CRED_USR --password-stdin'
                 sh 'docker push prakhar0012/numeric-app:$BUILD_NUMBER'
       }
