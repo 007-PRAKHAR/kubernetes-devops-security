@@ -96,7 +96,6 @@ pipeline {
               }
             }
           }
-        }
     stage('Integration Tests - DEV') {
       steps {
          script {
@@ -113,6 +112,7 @@ pipeline {
          }
        }
      }
+    }
 post {
   always {
     sh 'docker logout'
