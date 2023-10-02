@@ -2,8 +2,14 @@ pipeline {
 
   environment{
     DOCKER_CRED = credentials('docker-hub')
-  } 
-  
+    deploymentName = "devsecops"
+    containerName = "devsecops-container"
+    serviceName = "devsecops-svc"
+    imageName = "siddharth67/numeric-app:${GIT_COMMIT}"
+    applicationURL="http://devsecops-demo.eastus.cloudapp.azure.com"
+    applicationURI="/increment/99"
+  }
+	
   agent any
 
   stages {
@@ -65,9 +71,9 @@ pipeline {
     }
     stage('Docker build and push') {
             steps {
-                sh 'sudo docker build -t prakhar0012/numeric-app:$BUILD_NUMBER . '
+                sh 'sudo docker build -t prakhar0012/numeric-app:${GIT_COMMIT} . '
                 sh 'echo $DOCKER_CRED_PSW | docker login -u $DOCKER_CRED_USR --password-stdin'
-                sh 'docker push prakhar0012/numeric-app:$BUILD_NUMBER'
+                sh 'docker push prakhar0012/numeric-app:${GIT_COMMIT}'
       }
     }
     stage ('Vulnerability Scan - k8s') {
@@ -91,6 +97,22 @@ pipeline {
             }
           }
         }
+    stage('Integration Tests - DEV') {
+      steps {
+         script {
+           try {
+             withKubeConfig([credentialsId: 'kubeconfig']) {
+               sh "bash integration-test.sh"
+             }
+           } catch (e) {
+             withKubeConfig([credentialsId: 'kubeconfig']) {
+               sh "kubectl -n default rollout undo deploy ${deploymentName}"
+             }
+             throw e
+           }
+         }
+       }
+     }
 post {
   always {
     sh 'docker logout'
